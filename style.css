@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -23,6 +23,7 @@ body {
     padding: 20px 30px;
     margin-bottom: 30px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
 .header h1 {
@@ -66,7 +67,7 @@ body {
 
 .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
     margin-bottom: 30px;
 }
@@ -103,151 +104,270 @@ body {
     color: #667eea;
 }
 
+/* Updated reservations grid for 4 cards per row */
 .reservations-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
 }
 
+/* Compact reservation cards */
 .reservation-card {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .reservation-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .reservation-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .reservation-header h4 {
     color: #2d3748;
-    font-size: 1.3em;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.reservation-header h4 i {
+    margin-right: 8px;
+    color: #667eea;
 }
 
 .reservation-details {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    padding: 5px 0;
+    margin-bottom: 6px;
+    padding: 3px 0;
+    font-size: 0.9em;
 }
 
 .detail-label {
     font-weight: 600;
     color: #4a5568;
+    flex: 0 0 auto;
+    margin-right: 8px;
+}
+
+.detail-label i {
+    width: 16px;
+    margin-right: 6px;
+    color: #718096;
+    font-size: 0.85em;
 }
 
 .detail-value {
     color: #2d3748;
+    text-align: right;
+    word-break: break-word;
+    flex: 1;
 }
 
 .comment-section {
-    background: #f7fafc;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9em;
+    border-left: 3px solid #667eea;
 }
 
 .comment-section strong {
     color: #4a5568;
+    display: block;
+    margin-bottom: 6px;
 }
 
+.comment-section strong i {
+    margin-right: 6px;
+    color: #667eea;
+}
+
+/* Improved status badges */
 .status-badge {
-    display: inline-block;
-    padding: 6px 15px;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 16px;
     font-weight: 600;
-    font-size: 0.9em;
-    margin-bottom: 15px;
+    font-size: 0.8em;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid;
 }
 
 .status-pending {
-    background: #fed7d7;
-    color: #c53030;
+    background: rgba(251, 211, 141, 0.2);
+    color: #d69e2e;
+    border-color: rgba(251, 211, 141, 0.4);
 }
 
 .status-approved {
-    background: #c6f6d5;
+    background: rgba(104, 211, 145, 0.2);
     color: #2f855a;
+    border-color: rgba(104, 211, 145, 0.4);
 }
 
 .status-rejected {
-    background: #feb2b2;
+    background: rgba(252, 129, 129, 0.2);
     color: #c53030;
+    border-color: rgba(252, 129, 129, 0.4);
 }
 
+/* Improved action buttons */
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
 .btn {
-    padding: 10px 20px;
+    padding: 9px 8px;
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s ease;
+    font-size: 0.7em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex: 1;
-    min-width: 80px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.btn i {
+    font-size: 0.85em;
+    flex-shrink: 0;
 }
 
 .btn-approve {
-    background: #48bb78;
+    background: linear-gradient(135deg, #48bb78, #38a169);
     color: white;
+    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
 }
 
 .btn-approve:hover {
-    background: #38a169;
+    background: linear-gradient(135deg, #38a169, #2f855a);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
 }
 
 .btn-reject {
-    background: #f56565;
+    background: linear-gradient(135deg, #f56565, #e53e3e);
     color: white;
+    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
 }
 
 .btn-reject:hover {
-    background: #e53e3e;
+    background: linear-gradient(135deg, #e53e3e, #c53030);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
 }
 
 .btn-delete {
-    background: #a0aec0;
+    background: linear-gradient(135deg, #718096, #4a5568);
     color: white;
+    box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3);
 }
 
 .btn-delete:hover {
-    background: #718096;
+    background: linear-gradient(135deg, #4a5568, #2d3748);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(113, 128, 150, 0.4);
 }
 
-@media (max-width: 768px) {
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive design improvements */
+@media (max-width: 1400px) and (min-width: 1201px) {
+    .reservations-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .btn {
+        font-size: 0.65em;
+        padding: 5px 6px;
+        gap: 3px;
+    }
+    
+    .btn i {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 1200px) {
+    .reservations-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .btn {
+        font-size: 0.75em;
+        padding: 7px 10px;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 900px) {
+    .reservations-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .reservation-card {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 600px) {
     .reservations-grid {
         grid-template-columns: 1fr;
     }
 
     .action-buttons {
         flex-direction: column;
+        gap: 8px;
     }
 
     .btn {
         flex: none;
+        padding: 10px 16px;
+        font-size: 0.8em;
+        gap: 6px;
     }
+    
+    .container {
+        padding: 16px;
+    }
+}
+
+/* Additional utility classes */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
