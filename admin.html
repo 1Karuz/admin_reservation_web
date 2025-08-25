@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-tachometer-alt"></i> Admin</h1>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchPage('dashboard')">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </button>
+        <button class="nav-tab" onclick="switchPage('reservations')">
+          <i class="fas fa-calendar-alt"></i> Reservations
+        </button>
+      </div>
+      <!-- 🔑 Logout button -->
+      <button onclick="logout()" style="position: absolute; bottom: 20px; right: 20px; padding: 8px 15px; background: #e74c3c; border: none; border-radius: 5px; color: white; cursor: pointer; z-index: 1000;">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page active">
+      <div class="dashboard-cards">
+        <div class="dashboard-card">
+          <i class="fas fa-check-circle"></i>
+          <h3>Total Events Approved</h3>
+          <div class="number" id="approvedCount">0</div>
+        </div>
+        <div class="dashboard-card">
+          <i class="fas fa-clock"></i>
+          <h3>Pending Approval</h3>
+          <div class="number" id="pendingCount">0</div>
+        </div>
+        <div class="dashboard-card">
+          <i class="fas fa-calendar-check"></i>
+          <h3>Total Reservations</h3>
+          <div class="number" id="totalCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reservations Page -->
+    <div id="reservations" class="page">
+      <div class="reservations-grid">
+        <!-- Reservations will be dynamically populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script>
+    // 🔑 Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBqvRVs2TMAmKrAz16cojV-ro89kbr65tg",
+      authDomain: "fire-setup-reservation.firebaseapp.com",
+      projectId: "fire-setup-reservation",
+      storageBucket: "fire-setup-reservation.firebasestorage.app",
+      messagingSenderId: "21283314883",
+      appId: "1:21283314883:web:3f4377257e4ed40f421676"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    let reservations = [];
+
+    // 🔒 Protect admin page
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        // Not logged in → back to login page
+        window.location.href = "admin-login.html";
+      } else {
+        console.log("✅ Admin logged in:", user.email);
+        listenReservations(); // 👈 only load reservations if logged in
+      }
+    });
+
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "admin-login.html";
+      });
+    }
+
+    function listenReservations() {
+      db.collection("reservations")
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          reservations = [];
+          snapshot.forEach(doc => {
+            reservations.push({ id: doc.id, ...doc.data() });
+          });
+          renderReservations();
+          updateDashboardStats();
+        }, err => {
+          console.error("Snapshot error:", err);
+        });
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return '';
+      if (timestamp.toDate) return timestamp.toDate().toLocaleDateString();
+      if (timestamp.seconds) return new Date(timestamp.seconds * 1000).toLocaleDateString();
+      return '';
+    }
+
+    function switchPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(page).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function updateDashboardStats() {
+      const approved = reservations.filter(r => r.status === 'approved').length;
+      const pending = reservations.filter(r => r.status === 'pending').length;
+      const total = reservations.length;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('totalCount').textContent = total;
+    }
+
+    function updateStatus(reservationId, newStatus) {
+      db.collection("reservations").doc(reservationId).update({
+        status: newStatus,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        console.log(`Reservation ${reservationId} updated`);
+      }).catch(err => console.error(err));
+    }
+
+    function deleteReservation(reservationId) {
+      if (confirm('Are you sure you want to delete this reservation?')) {
+        db.collection("reservations").doc(reservationId).delete()
+          .then(() => console.log("Deleted:", reservationId))
+          .catch(err => console.error(err));
+      }
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case 'approved': return 'status-approved';
+        case 'rejected': return 'status-rejected';
+        default: return 'status-pending';
+      }
+    }
+
+    function getStatusIcon(status) {
+      switch (status) {
+        case 'approved': return 'check';
+        case 'rejected': return 'times';
+        default: return 'clock';
+      }
+    }
+
+    function renderReservations() {
+      const container = document.querySelector('.reservations-grid');
+      if (reservations.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: white; font-size: 1.2em; grid-column: 1 / -1;">No reservations found</div>';
+        return;
+      }
+
+      container.innerHTML = reservations.map(reservation => {
+        const name = reservation.name || "-";
+        const eventType = reservation.eventType || "-";
+        const email = reservation.email || "-";
+        const date = reservation.date ? formatDate(reservation.date) : "-";
+        const timeFrom = reservation.timeFrom || "-";
+        const timeTo = reservation.timeTo || "-";
+        const comments = reservation.comments || "";
+        const status = reservation.status || "pending";
+
+        return `
+          <div class="reservation-card">
+            <div class="reservation-header">
+              <h4><i class="fas fa-user"></i> ${name}</h4>
+            </div>
+            <div class="reservation-details">
+              <div class="detail-row"><span class="detail-label"><i class="fas fa-calendar"></i> Event:</span> <span class="detail-value">${eventType}</span></div>
+              <div class="detail-row"><span class="detail-label"><i class="fas fa-envelope"></i> Email:</span> <span class="detail-value">${email}</span></div>
+              <div class="detail-row"><span class="detail-label"><i class="fas fa-calendar-day"></i> Date:</span> <span class="detail-value">${date}</span></div>
+              <div class="detail-row"><span class="detail-label"><i class="fas fa-clock"></i> Time:</span> <span class="detail-value">${timeFrom} - ${timeTo}</span></div>
+            </div>
+            ${comments ? `<div class="comment-section"><strong><i class="fas fa-comment"></i> Comment:</strong><br>${comments}</div>` : ''}
+            <div class="status-badge ${getStatusClass(status)}">
+              <i class="fas fa-${getStatusIcon(status)}"></i> ${status.toUpperCase()}
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-approve" onclick="updateStatus('${reservation.id}', 'approved')"><i class="fas fa-check"></i> Approve</button>
+              <button class="btn btn-reject" onclick="updateStatus('${reservation.id}', 'rejected')"><i class="fas fa-times"></i> Reject</button>
+              <button class="btn btn-delete" onclick="deleteReservation('${reservation.id}')"><i class="fas fa-trash"></i> Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
