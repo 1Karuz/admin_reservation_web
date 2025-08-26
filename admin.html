@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> new fas fa icon
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -17,8 +18,17 @@
         <button class="nav-tab active" onclick="switchPage('dashboard')">
           <i class="fas fa-chart-line"></i> Dashboard
         </button>
+
         <button class="nav-tab" onclick="switchPage('reservations')">
           <i class="fas fa-calendar-alt"></i> Reservations
+        </button>
+
+        <button class="nav-tab" onclick="switchPage('calendar')">
+          Event Calendar
+        </button>
+
+        <button class="nav-tab" onclick="switchPage('staff-management')">
+        Staff Management
         </button>
       </div>
       <!-- 🔑 Logout button -->
@@ -53,6 +63,11 @@
       <div class="reservations-grid">
         <!-- Reservations will be dynamically populated here -->
       </div>
+    </div>
+        <div id="calendar" class="page">
+    </div>
+
+        <div id="staff-management" class="page">
     </div>
   </div>
 
